@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Features — TaskTogether</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="logo.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#026aa7" />
+    <script defer src="app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        TaskTogether.renderHeader(document.getElementById("header"), { sloganOnly: true });
+      });
+    </script>
+  </head>
+  <body>
+    <header id="header" class="header maroon"></header>
+    <main class="container">
+      <h1 style="margin-top: 0">Features</h1>
+      <div class="grid">
+        <div class="card">
+          <h3 class="ink">MY PROJECTS</h3>
+          <p class="helper">
+            Kanban-style lists for moving work forward with clarity.
+          </p>
+          <p>
+            Break work into lanes like To Do, In Progress, and Done. Drag cards,
+            assign owners, and track status at a glance across MY PROJECTS.
+          </p>
+        </div>
+        <div class="card">
+          <h3 class="ink">Inbox</h3>
+          <p class="helper">Capture ideas instantly across devices and tabs.</p>
+          <p>
+            Jot down tasks the moment they pop up. Your Inbox is the front door
+            for all your ideas—move items to MY PROJECTS when ready.
+          </p>
+        </div>
+        <div class="card">
+          <h3 class="ink">Chat</h3>
+          <p class="helper">Real-time discussion that stays with your tasks.</p>
+          <p>
+            Discuss tasks where they live. Conversations remain attached to the
+            work so decisions aren’t lost in separate apps.
+          </p>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

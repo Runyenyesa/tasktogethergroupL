@@ -1,27 +1,11 @@
-# Render Blueprint for TaskTogether backend
-# This blueprint creates a single Docker-based Web Service which builds
-# the image using the Dockerfile in the repo and runs the PHP built-in server.
-
 services:
   - type: web
     name: tasktogether-backend
     env: docker
     plan: free
-    repo: https://github.com/Lincolnsachieves/tasktogethergroupL
     branch: main
     dockerfilePath: Dockerfile
-    # Render will pass $PORT at runtime; Dockerfile CMD uses ${PORT:-10000}
-    # No additional build/start commands needed for Docker
     autoDeploy: true
     envVars:
       - key: APP_ENV
         value: production
-      - key: LOG_LEVEL
-        value: info
-# Optional: you can add databases, cron jobs, or other services here
-# Example of an additional PostgreSQL service (uncomment and adapt if needed):
-# databases:
-#   - name: tasktogether-db
-#     plan: free
-#     engine: postgresql
-#     version: 15

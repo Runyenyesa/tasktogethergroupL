@@ -1,37 +1,17 @@
 {
-    "name": "symfony/polyfill-php80",
-    "type": "library",
-    "description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
-    "keywords": ["polyfill", "shim", "compatibility", "portable"],
-    "homepage": "https://symfony.com",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Ion Bazan",
-            "email": "ion.bazan@gmail.com"
-        },
-        {
-            "name": "Nicolas Grekas",
-            "email": "p@tchwork.com"
-        },
-        {
-            "name": "Symfony Community",
-            "homepage": "https://symfony.com/contributors"
-        }
-    ],
+    "name": "tasktogether/backend",
+    "description": "TaskTogether group task management backend",
+    "type": "project",
     "require": {
-        "php": ">=7.2"
+        "php": ">=8.1",
+        "vlucas/phpdotenv": "^5.6"
     },
     "autoload": {
-        "psr-4": { "Symfony\\Polyfill\\Php80\\": "" },
-        "files": [ "bootstrap.php" ],
-        "classmap": [ "Resources/stubs" ]
-    },
-    "minimum-stability": "dev",
-    "extra": {
-        "thanks": {
-            "name": "symfony/polyfill",
-            "url": "https://github.com/symfony/polyfill"
+        "psr-4": {
+            "App\\": "src/"
         }
+    },
+    "config": {
+        "optimize-autoloader": true
     }
 }

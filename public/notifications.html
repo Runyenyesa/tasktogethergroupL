@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TaskTogether — Notifications</title>
+    <link rel="icon" href="logo.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#026aa7" />
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        TaskTogether.ensureSeed();
+        const header = document.getElementById("header");
+        TaskTogether.renderHeader(header, { sloganOnly: true });
+        // Generate upcoming deadline reminders (within 3 days)
+        TaskTogether.refreshDeadlineNotifications(3);
+
+        const list = document.getElementById("list");
+        const state = TaskTogether.loadState();
+
+        // Fallback: if no reminder created in the last 24h, add a gentle nudge
+        const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+        const hasRecentReminder = state.notifications.some(
+          (n) => n.ts >= dayAgo && /Reminder:/i.test(n.text)
+        );
+        if (!hasRecentReminder) {
+          state.notifications.unshift({
+            id: crypto.randomUUID(),
+            text: "Reminder: Deadline is approaching. Review tasks due soon.",
+            ts: Date.now(),
+          });
+          TaskTogether.saveState(state);
+        }
+        list.innerHTML = "";
+        state.notifications.forEach((n) => {
+          const item = document.createElement("div");
+          item.className = "card";
+          item.style.marginBottom = "12px";
+          item.innerHTML = `<div>${
+            n.text
+          }</div><div class="helper">${TaskTogether.formatTime(n.ts)}</div>`;
+          list.appendChild(item);
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <header id="header" class="header black"></header>
+    <main class="container">
+      <h2>Notifications</h2>
+      <div id="list"></div>
+    </main>
+  </body>
+</html>

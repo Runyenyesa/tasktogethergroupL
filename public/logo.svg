@@ -1,0 +1,25 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="TaskTogether logo">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A84FF"/>
+      <stop offset="1" stop-color="#026AA7"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#091E42" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <!-- Rounded square tile -->
+  <rect x="20" y="20" width="160" height="160" rx="28" fill="url(#g)" filter="url(#shadow)"/>
+  <!-- Check mark and chat bubble combined into a T monogram -->
+  <g fill="#FFFFFF">
+    <!-- Top bar T -->
+    <rect x="55" y="70" width="90" height="14" rx="7" opacity="0.95"/>
+    <!-- Stem T -->
+    <rect x="95" y="84" width="14" height="54" rx="7" opacity="0.95"/>
+    <!-- Chat tail -->
+    <path d="M82 142c-6 0-11 5-11 11v8l10-6h38c6 0 11-5 11-11v-2H82z" opacity="0.95"/>
+    <!-- Subtle tick for tasks -->
+    <path d="M78 112l10 10 24-24" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+</svg>
+

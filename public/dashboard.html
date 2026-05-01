@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TaskTogether — Dashboard</title>
+    <link rel="icon" href="logo.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#026aa7" />
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        TaskTogether.ensureSeed();
+        const header = document.getElementById("header");
+        TaskTogether.renderHeader(header, {});
+        const currentUser = TaskTogether.getCurrentUser();
+        const isLeader = currentUser && currentUser.role === "leader";
+        function render(showEmpty = false) {
+          const state = TaskTogether.loadState();
+          const list = document.getElementById("groups");
+          list.innerHTML = "";
+          if (showEmpty) return;
+          state.groupOrder.forEach((id) => {
+            const g = state.groups[id];
+            if (!g) return;
+            const card = document.createElement("div");
+            card.className = "card group-card";
+            card.innerHTML = `
+            <h3>${g.name}</h3>
+            <div class="muted">${g.tasks.length} tasks • ${g.members.length} members</div>
+            <div>
+              <a class="btn primary" href="group.html?group=${g.id}">View Tasks</a>
+            </div>
+          `;
+            list.appendChild(card);
+          });
+        }
+
+        render();
+        // Home resets list to empty view
+        document
+          .querySelector('.side-link[aria-current="page"]')
+          .addEventListener("click", (e) => {
+            e.preventDefault();
+            render(true);
+          });
+
+        // View Projects just renders normally
+        const vp = document.getElementById("viewProjects");
+        vp.addEventListener("click", (e) => {
+          e.preventDefault();
+          render(false);
+        });
+
+        // Create TEAM flow with member selection modal
+        const createWsBtn = document.getElementById("createWorkspace");
+        if (isLeader) {
+          createWsBtn.addEventListener("click", () => {
+            showCreateTeamModal();
+          });
+        } else {
+          createWsBtn.style.display = "none";
+        }
+
+        // Search assignments across all groups
+        function runSearch(q) {
+          const results = document.getElementById("searchResults");
+          if (!results) return;
+          results.innerHTML = "";
+          const s = TaskTogether.loadState();
+          const query = (q || "").toLowerCase();
+          if (!query) return;
+          s.groupOrder.forEach((gid) => {
+            const g = s.groups[gid];
+            if (!g) return;
+            g.tasks.forEach((t) => {
+              const hay = `${t.name} ${t.description || ""}`.toLowerCase();
+              if (hay.includes(query)) {
+                const item = document.createElement("a");
+                item.className = "search-item";
+                item.href = `group.html?group=${gid}`;
+                item.textContent = `${t.name} • ${g.name}`;
+                results.appendChild(item);
+              }
+            });
+          });
+        }
+
+        document.addEventListener("input", (e) => {
+          if (e.target && e.target.id === "assignmentSearch") {
+            runSearch(e.target.value);
+          }
+        });
+
+        const createGroupBtn = document.getElementById("createGroup");
+        if (isLeader) {
+          createGroupBtn.addEventListener("click", () => {
+            const defaultName = "New TEAM";
+            const id = TaskTogether.createGroup(defaultName, "");
+            if (id) window.location.href = `group.html?group=${id}`;
+          });
+        } else {
+          createGroupBtn.style.display = "none";
+        }
+      });
+    </script>
+    <style>
+      .fab {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        box-shadow: 0 6px 16px rgba(2, 106, 167, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <header id="header" class="header black"></header>
+    <main class="container home-layout">
+      <aside class="home-side">
+        <nav class="side-nav card">
+          <a class="side-link" href="#" aria-current="page">Home</a>
+          <a class="side-link" href="#projects" id="viewProjects"
+            >View Projects</a
+          >
+          <button
+            id="createWorkspace"
+            class="btn ghost"
+            style="margin-top: 8px"
+          >
+            + Create a TEAM
+          </button>
+        </nav>
+      </aside>
+
+      <section class="home-main">
+        <div class="card home-hero">
+          <div class="hero-illustration"></div>
+          <h3 style="margin: 8px 0 6px">Organize anything</h3>
+          <div class="helper">
+            Put everything in one place and start moving things forward with
+            your first TaskTogether board!
+          </div>
+          <div style="margin-top: 10px">
+            <button id="createGroup" class="btn primary">
+              Create Group Avenue
+            </button>
+          </div>
+        </div>
+
+        <h2 style="margin-top: 0">Your Groups</h2>
+        <div id="groups" class="grid"></div>
+      </section>
+
+      <aside class="home-side home-side-right">
+        <div class="card">
+          <h4 style="margin: 0 0 8px">Search assignments</h4>
+          <div class="field" style="margin-bottom: 8px">
+            <input
+              id="assignmentSearch"
+              type="text"
+              placeholder="Search tasks by name or description"
+            />
+          </div>
+          <div id="searchResults" class="search-list"></div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Create TEAM Modal -->
+    <div id="createTeamModal" class="modal" style="display: none">
+      <div class="modal-dialog">
+        <button class="modal-close" id="closeCreateTeam">×</button>
+        <div class="brand" style="justify-content: center; margin-bottom: 8px">
+          <img src="logo.svg" alt="TaskTogether logo" class="logo-img" />
+          TaskTogether
+        </div>
+        <h3 class="modal-title" style="text-align: center; margin: 0 0 12px">
+          Create a TEAM
+        </h3>
+        <form id="createTeamForm">
+          <div class="field">
+            <label>TEAM Name</label>
+            <input
+              id="teamName"
+              type="text"
+              placeholder="Enter TEAM name"
+              required
+            />
+          </div>
+          <div class="field">
+            <label>Invite Members</label>
+            <div class="member-list" id="memberList">
+              <div class="member-item">
+                <input type="checkbox" id="member1" value="john@example.com" />
+                <label for="member1" class="member-email"
+                  >john@example.com</label
+                >
+                <span class="member-role">Student</span>
+              </div>
+              <div class="member-item">
+                <input type="checkbox" id="member2" value="sarah@example.com" />
+                <label for="member2" class="member-email"
+                  >sarah@example.com</label
+                >
+                <span class="member-role">Student</span>
+              </div>
+              <div class="member-item">
+                <input type="checkbox" id="member3" value="mike@example.com" />
+                <label for="member3" class="member-email"
+                  >mike@example.com</label
+                >
+                <span class="member-role">Student</span>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Additional Emails</label>
+            <textarea
+              id="additionalEmails"
+              placeholder="Enter additional emails (comma-separated)"
+              rows="2"
+            ></textarea>
+          </div>
+          <button class="btn primary full" type="submit">Create TEAM</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Create TEAM modal functions
+      function showCreateTeamModal() {
+        const modal = document.getElementById("createTeamModal");
+        modal.style.display = "flex";
+      }
+
+      function hideCreateTeamModal() {
+        const modal = document.getElementById("createTeamModal");
+        modal.style.display = "none";
+      }
+
+      // Close modal handlers
+      document
+        .getElementById("closeCreateTeam")
+        .addEventListener("click", hideCreateTeamModal);
+
+      // Create TEAM form submission
+      document
+        .getElementById("createTeamForm")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+          const name = document.getElementById("teamName").value;
+          const selectedMembers = Array.from(
+            document.querySelectorAll("#memberList input:checked")
+          ).map((cb) => cb.value);
+          const additionalEmails =
+            document.getElementById("additionalEmails").value;
+          const allEmails = [
+            ...selectedMembers,
+            ...additionalEmails
+              .split(",")
+              .map((e) => e.trim())
+              .filter((e) => e),
+          ];
+
+          const id = TaskTogether.createGroup(name, allEmails.join(","));
+          hideCreateTeamModal();
+          window.location.href = `group.html?group=${id}`;
+        });
+
+      // Close modal when clicking outside
+      document
+        .getElementById("createTeamModal")
+        .addEventListener("click", (e) => {
+          if (e.target.id === "createTeamModal") {
+            hideCreateTeamModal();
+          }
+        });
+    </script>
+  </body>
+</html>

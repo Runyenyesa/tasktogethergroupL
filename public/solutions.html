@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Solutions — TaskTogether</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="logo.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#026aa7" />
+    <script defer src="app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        TaskTogether.renderHeader(document.getElementById("header"), { sloganOnly: true });
+      });
+    </script>
+  </head>
+  <body>
+    <header id="header" class="header maroon"></header>
+    <main class="container">
+      <h1 style="margin-top: 0">Solutions</h1>
+      <div class="grid">
+        <div class="card">
+          <h3 class="ink">Personal</h3>
+          <p class="helper">
+            Stay on top of life admin with simple lists and MY PROJECTS.
+          </p>
+          <p>
+            Plan your week, track habits, and turn goals into daily actions.
+            TaskTogether scales from a simple checklist to powerful MY PROJECTS.
+          </p>
+        </div>
+        <div class="card">
+          <h3 class="ink">Teams</h3>
+          <p class="helper">
+            Plan sprints, share updates, and collaborate in context.
+          </p>
+          <p>
+            From marketing calendars to engineering sprints, keep everyone
+            aligned with shared MY PROJECTS and real-time chat.
+          </p>
+        </div>
+        <div class="card">
+          <h3 class="ink">Education</h3>
+          <p class="helper">
+            Coordinate assignments and group projects seamlessly.
+          </p>
+          <p>
+            Coordinate assignments, manage group work, and capture feedback in
+            one place students and teachers can revisit anytime.
+          </p>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

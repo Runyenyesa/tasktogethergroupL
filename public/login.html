@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TaskTogether — Login</title>
+    <link rel="icon" href="logo.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#026aa7" />
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        TaskTogether.ensureSeed();
+        const form = document.getElementById("authForm");
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const name = document.getElementById("name").value.trim() || "User";
+          const email = document.getElementById("email").value.trim();
+          const role = (document.getElementById("role")?.value || "member").toLowerCase();
+          const user = { id: crypto.randomUUID(), name, email };
+          user.role = role === "leader" ? "leader" : "member";
+          TaskTogether.setCurrentUser(user);
+          window.location.href = "dashboard.html";
+        });
+        document.getElementById("gotoSignup").addEventListener("click", () => {
+          document.getElementById("nameField").style.display = "block";
+        });
+      });
+    </script>
+    <style>
+      .auth .panel .title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <header id="header" class="header welcome">
+      <div class="brand welcome-text">
+        Please login and go ahead to access our different services
+      </div>
+    </header>
+    <div class="auth">
+      <div
+        class="left"
+        style="
+          background: linear-gradient(
+              0deg,
+              rgba(255, 235, 130, 0.55),
+              rgba(255, 235, 130, 0.55)
+            ),
+            url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&w=1600&q=80') center/cover no-repeat;
+        "
+      >
+        <div class="illustration">
+          <h1>TaskTogether</h1>
+          <p>
+            Collaborate on tasks with Trello-like simplicity. Chat with your
+            group in real-time across tabs.
+          </p>
+        </div>
+      </div>
+      <div class="right">
+        <div class="panel card auth-panel">
+          <div class="title auth-title">
+            <div class="headline">Welcome back</div>
+            <div class="subtitle">
+              Sign in or create your TaskTogether account
+            </div>
+          </div>
+          <form id="authForm">
+            <div id="nameField" class="field" style="display: none">
+              <label>Name</label>
+              <input id="name" type="text" placeholder="Your name" />
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+            <div class="field">
+              <label>Password</label>
+              <input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <div class="field">
+              <label>Role</label>
+              <select id="role">
+                <option value="leader">Group Leader</option>
+                <option value="member" selected>Group Member</option>
+              </select>
+            </div>
+            <button class="btn primary full" type="submit">Continue</button>
+            <div class="helper center">
+              <button type="button" class="link cta-signup" id="gotoSignup">
+                <span>Don't have an account?</span>
+                <strong>Sign Up</strong>
+              </button>
+            </div>
+            <div class="helper">
+              <a href="#">Forgot Password?</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div
+      id="signupModal"
+      class="modal"
+      aria-hidden="true"
+      style="display: none"
+    >
+      <div class="modal-dialog">
+        <button class="modal-close" id="closeSignup" aria-label="Close">
+          ×
+        </button>
+        <div class="brand" style="justify-content: center; margin-bottom: 8px">
+          <img src="logo.svg" alt="TaskTogether logo" class="logo-img" />
+          TaskTogether
+        </div>
+        <h3 class="modal-title" style="text-align: center; margin: 0 0 12px">
+          Sign up to continue
+        </h3>
+        <form id="signupForm">
+          <div class="field">
+            <label>Email</label>
+            <input
+              id="signupEmail"
+              type="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="helper" style="margin-top: -6px; margin-bottom: 12px">
+            By signing up, you accept the TaskTogether Terms of Service and
+            acknowledge the Privacy Policy.
+          </div>
+          <button class="btn primary full" type="submit">Sign up</button>
+        </form>
+        <div class="divider"><span>Or continue with</span></div>
+        <div class="providers">
+          <button class="provider google"><span></span>Google</button>
+          <button class="provider microsoft"><span></span>Microsoft</button>
+          <button class="provider apple"><span></span>Apple</button>
+          <button class="provider slack"><span></span>Slack</button>
+        </div>
+        <div class="helper center" style="margin-top: 12px">
+          Already have an account? <a href="#" id="switchToLogin">Log in</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("signupModal");
+        const openBtn = document.getElementById("gotoSignup");
+        const closeBtn = document.getElementById("closeSignup");
+        const switchToLogin = document.getElementById("switchToLogin");
+        const signupForm = document.getElementById("signupForm");
+
+        function openModal() {
+          modal.style.display = "grid";
+          modal.setAttribute("aria-hidden", "false");
+        }
+        function closeModal() {
+          modal.style.display = "none";
+          modal.setAttribute("aria-hidden", "true");
+        }
+        openBtn.addEventListener("click", openModal);
+        closeBtn.addEventListener("click", closeModal);
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) closeModal();
+        });
+        switchToLogin.addEventListener("click", (e) => {
+          e.preventDefault();
+          closeModal();
+        });
+
+        // If navigated with #signup hash, open signup modal automatically
+        if (location.hash === "#signup") {
+          openModal();
+        }
+
+        signupForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const email = document.getElementById("signupEmail").value.trim();
+          if (!email) return;
+          const user = {
+            id: crypto.randomUUID(),
+            name: email.split("@")[0],
+            email,
+            role: "member",
+          };
+          TaskTogether.setCurrentUser(user);
+          window.location.href = "dashboard.html";
+        });
+      });
+    </script>
+  </body>
+</html>

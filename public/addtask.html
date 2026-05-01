@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TaskTogether — Add Task</title>
+    <link rel="icon" href="logo.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#026aa7" />
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="app.js"></script>
+    <script>
+      function q(k) {
+        return new URLSearchParams(location.search).get(k);
+      }
+      document.addEventListener("DOMContentLoaded", () => {
+        TaskTogether.ensureSeed();
+        const header = document.getElementById("header");
+        TaskTogether.renderHeader(header, { sloganOnly: true });
+
+        const groupId = q("group");
+        const projectIdFromUrl = q("project");
+        const state = TaskTogether.loadState();
+        const group = state.groups[groupId];
+        if (!group) {
+          alert("Group not found");
+          location.href = "dashboard.html";
+          return;
+        }
+
+        // Permission guard: only leaders/owners can add tasks
+        const current = TaskTogether.getCurrentUser();
+        if (!TaskTogether.canEditGroup(groupId, current?.id)) {
+          alert("Only group leaders can add tasks.");
+          location.href = `group.html?group=${groupId}`;
+          return;
+        }
+
+        const sel = document.getElementById("assignee");
+        group.members.forEach((id) => {
+          const u = state.users[id];
+          const opt = document.createElement("option");
+          opt.value = id;
+          opt.textContent = u ? u.name : "User";
+          sel.appendChild(opt);
+        });
+
+        // Projects dropdown
+        const projSel = document.getElementById("project");
+        group.projects.forEach((p) => {
+          const opt = document.createElement("option");
+          opt.value = p.id;
+          opt.textContent = p.name;
+          projSel.appendChild(opt);
+        });
+        if (projectIdFromUrl) projSel.value = projectIdFromUrl;
+
+        document.getElementById("taskForm").addEventListener("submit", (e) => {
+          e.preventDefault();
+          const name = document.getElementById("name").value.trim();
+          const description = document
+            .getElementById("description")
+            .value.trim();
+          const assigneeId = document.getElementById("assignee").value || null;
+          const projectId = document.getElementById("project").value || null;
+          const dueDate = document.getElementById("dueDate").value || null;
+          const status = document.getElementById("status").value;
+          if (!name) return alert("Task name is required");
+          TaskTogether.createTask(groupId, {
+            name,
+            description,
+            projectId,
+            dueDate,
+            assigneeId,
+            status,
+          });
+          location.href = `group.html?group=${groupId}`;
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <header id="header" class="header maroon"></header>
+    <main class="container">
+      <div class="card" style="max-width: 700px; margin: 0 auto">
+        <h2 style="margin-top: 0">Add Task</h2>
+        <form id="taskForm">
+          <div class="field">
+            <label>Project</label>
+            <select id="project"></select>
+          </div>
+          <div class="field">
+            <label>Task Name</label>
+            <input
+              id="name"
+              type="text"
+              placeholder="e.g., Design Logo"
+              required
+            />
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea
+              id="description"
+              rows="4"
+              placeholder="Details..."
+            ></textarea>
+          </div>
+          <div class="field">
+            <label>Due Date</label>
+            <input id="dueDate" type="date" />
+          </div>
+          <div class="field">
+            <label>Assign to</label>
+            <select id="assignee"></select>
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="status">
+              <option value="todo">To Do</option>
+              <option value="progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+          <button class="btn primary" type="submit">Save Task</button>
+        </form>
+      </div>
+    </main>
+  </body>
+</html>
